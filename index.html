@@ -161,11 +161,33 @@
       return shuffled;
     }
 
+	let previousTriples = new Set();
+
 	function selectBalancedTriple() {
-  	let sortedSongs = songs.sort((a, b) => songAppearances[a.title] - songAppearances[b.title]);
-  	let selectedTriple = sortedSongs.slice(0, 3);
-  	selectedTriple.forEach(song => songAppearances[song.title]++);
-  	return selectedTriple;
+   	 // Trova il numero minimo di apparizioni
+   	 let minAppearances = Math.min(...songs.map(s => songAppearances[s.title]));
+
+  	  // Filtra solo le canzoni con il numero minimo di apparizioni
+  	  let leastPlayedSongs = songs.filter(s => songAppearances[s.title] === minAppearances);
+
+ 	   // Mischia casualmente le canzoni selezionate
+ 	   let shuffledSongs = shuffle(leastPlayedSongs);
+
+ 	   let selectedTriple;
+  	  let maxAttempts = 10; // Limite di tentativi per evitare loop infiniti
+
+  	  do {
+    	    selectedTriple = shuffledSongs.slice(0, 3);
+        	maxAttempts--;
+	    } while (previousTriples.has(JSON.stringify(selectedTriple.map(s => s.title))) && maxAttempts > 0);
+
+  	  // Registra la terzina per evitare ripetizioni
+   	 previousTriples.add(JSON.stringify(selectedTriple.map(s => s.title)));
+
+   	 // Aggiorna il conteggio delle apparizioni
+   	 selectedTriple.forEach(song => songAppearances[song.title]++);
+
+   	 return selectedTriple;
 	}
 
 
@@ -191,14 +213,7 @@
   	document.getElementById("songBtn3").innerHTML = `<strong>${currentTriple[2].artist}</strong><br>${currentTriple[2].title}`;
 	}
 
-	function selectBalancedTriple() {
-  	let sortedSongs = songs.sort((a, b) => songAppearances[a.title] - songAppearances[b.title]);
-  	let selectedTriple = sortedSongs.slice(0, 3);
-  	selectedTriple.forEach(song => songAppearances[song.title]++);
-  	return selectedTriple;
-	}
-
-     
+	     
     // Funzione chiamata al click su uno dei 3 pulsanti
     function songClicked(btnIndex) {
       let song = currentTriple[btnIndex];
