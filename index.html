@@ -7,84 +7,121 @@
   <!-- Inclusione di html2canvas per esportare in JPG -->
      <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
+<style>
+  /* Sfondo dinamico e colori vivaci */
+  body {
+      font-family: 'Montserrat', sans-serif;
       text-align: center;
-      background-color: #e0f7fa; /* Sfondo colorato */
+      background: linear-gradient(135deg, #ff5f6d, #ffc371);
       margin: 0;
       padding: 0;
-    }
-    .container {
+      color: #fff;
+  }
+  
+  /* Container con effetto trasparente e blur per un look "glassmorphism" */
+  .container {
       width: 90%;
       max-width: 400px;
       margin: 50px auto;
-      background: #ffffff;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
       padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    .song {
+      border-radius: 15px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+  }
+  
+  /* Pulsanti delle canzoni con gradienti, transizioni e ombre */
+  .song {
       display: block;
       width: 100%;
       padding: 15px;
       margin: 10px 0;
       font-size: 18px;
       font-weight: bold;
-      background: #ff5e57;
-      color: white;
+      background: linear-gradient(45deg, #ff416c, #ff4b2b);
+      color: #fff;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
       cursor: pointer;
-    }
-    .song.clicked {
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  .song:hover {
+      transform: scale(1.03);
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+  }
+  .song.clicked {
       opacity: 0.7;
-    }
-    #progress {
+  }
+  
+  /* Stile del testo di progresso */
+  #progress {
       margin-top: 10px;
       font-size: 16px;
-    }
-    button.action {
+      font-weight: bold;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Pulsanti azione con gradienti e hover animati */
+  button.action {
       margin-top: 15px;
-      padding: 10px;
+      padding: 12px 20px;
       font-size: 16px;
       border: none;
-      background: #1e90ff;
-      color: white;
-      border-radius: 5px;
+      background: linear-gradient(45deg, #00c6ff, #0072ff);
+      color: #fff;
+      border-radius: 8px;
       cursor: pointer;
-    }
-    button.action:hover {
-      background: #007bff;
-    }
-    /* Stile per il pulsante Export JPG */
-    button.export {
-      background: #4caf50;
-    }
-    button.export:hover {
-      background: #388e3c;
-    }
-	button {
-            margin-top: 15px;
-            padding: 10px;
-            font-size: 16px;
-            border: none;
-            background: #1e90ff;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background: #007bff;
-        }
-        #ranking {
-            display: none;
-            margin-top: 15px;
-            background-color: #fff;
-            padding: 10px;
-            border-radius: 5px;
-	}
-  </style>
+      transition: background 0.3s, transform 0.2s;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  button.action:hover {
+      background: linear-gradient(45deg, #0072ff, #00c6ff);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Pulsante per esportare, con un tocco di verde neon */
+  button.export {
+      background: linear-gradient(45deg, #56ab2f, #a8e063);
+  }
+  button.export:hover {
+      background: linear-gradient(45deg, #a8e063, #56ab2f);
+  }
+  
+  /* Stile generale per eventuali altri pulsanti */
+  button {
+      margin-top: 15px;
+      padding: 12px 20px;
+      font-size: 16px;
+      border: none;
+      background: linear-gradient(45deg, #00c6ff, #0072ff);
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.3s;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  button:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(45deg, #0072ff, #00c6ff);
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Classifica con sfondo bianco quasi trasparente per risaltare il contenuto */
+  #ranking {
+      display: none;
+      margin-top: 15px;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      color: #333;
+  }
+</style>
+
+
 </head>
 <body>
   <div class="container">
@@ -275,8 +312,14 @@
   // Aggiunge il titolo personalizzato alla classifica
   let rankingDiv = document.getElementById("ranking");
   let originalTitle = rankingDiv.innerHTML; // Salva il contenuto originale
+  // Calcola l'accuratezza come percentuale
+  let accuracy = ((totalRounds / maxRounds) * 100).toFixed(1);
 
-  let customTitle = `<h2>La classifica di Sanremo 2025 secondo ${userName}</h2>`;
+
+  let customTitle = `
+    <h2>La classifica di Sanremo 2025 secondo ${userName}</h2>
+    <h4>Con un'accuratezza del ${accuracy}%</h4>
+  `;
   rankingDiv.innerHTML = customTitle + originalTitle;
 
   // Cattura la classifica come immagine
