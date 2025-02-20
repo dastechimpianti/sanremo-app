@@ -88,6 +88,7 @@
 </head>
 <body>
   <div class="container">
+    
     <h2>Ordina le canzoni</h2>
     <!-- Area per mostrare le 3 canzoni -->
     <div id="songDisplay">
@@ -101,6 +102,10 @@
     <button class="action" onclick="showRanking()">Mostra classifica</button>
     
     <div id="ranking" style="display:none; margin-top:15px;"></div>
+
+      <h5>prodotto da Stefano Campanale</h5>
+      
+
   </div>
 
   <script>
@@ -142,7 +147,7 @@
     ];
 
 	let songAppearances = {};
-	songs.forEach(song => songAppearances[song.title] = 0);
+	 songs.forEach(song => songAppearances[song.title] = 0);
 
 
     // Variabili per il round
@@ -188,7 +193,7 @@
    	 selectedTriple.forEach(song => songAppearances[song.title]++);
 
    	 return selectedTriple;
-	}
+  }
 
 
     // Funzione per mostrare 3 canzoni casuali
